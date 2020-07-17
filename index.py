@@ -41,26 +41,17 @@ def login():
     pass_input.send_keys(password)
     time.sleep(2)
     login_button.click()
+def get_to_photos_page():
+    time.sleep(3)
+    profile=driver.find_element_by_css_selector("._1k67._cy7")
+    profile.click()
+    time.sleep(2)
+    tab_links=driver.find_elements_by_css_selector("._6-6")
+    tab_links[3].click()
+    time.sleep(3)
+    driver.execute_script(f"window.scrollTo(0, 1000)") 
+    time.sleep(3)
 
-login()
-
-   
-time.sleep(3)
-profile=driver.find_element_by_css_selector("._1k67._cy7")
-profile.click()
-
-#driver.get("https://www.facebook.com/alfonso.garciaminaur/photos?lst=838059340%3A838059340%3A1594990536")
-time.sleep(2)
-photos_link=driver.find_elements_by_css_selector("._6-6")
-photos_link[3].click()
-time.sleep(3)
-driver.execute_script(f"window.scrollTo(0, 1000)") 
-time.sleep(3)
-
-pics=driver.find_elements_by_css_selector(".uiMediaThumb")
-driver.execute_script(f"window.scrollTo(0, 1000)") 
-
-print(len(pics))
 def scroll_down(previous_len,scroll_y):
     time.sleep(2)
     loaded_pics=driver.find_elements_by_css_selector(".uiMediaThumb")
@@ -70,14 +61,10 @@ def scroll_down(previous_len,scroll_y):
     else:
         driver.execute_script(f"window.scrollTo(0, {scroll_y+3000})") 
         scroll_down(len(loaded_pics),scroll_y+3000)
-print(scroll_down(0,0))
 
-html=driver.page_source
-soup=bs4.BeautifulSoup(html,'html.parser')
-pictures=soup.select(".uiMediaThumb")
-index=0
-errors=0
-for pic in pictures:
+
+
+def download_picture(pic,index,errors):
     try:
 
         driver.get(pic["href"])
@@ -92,9 +79,21 @@ for pic in pictures:
     except:
         errors+=1
         print("errors",errors)
+    
+login()
+
+get_to_photos_page()
+
+pics=driver.find_elements_by_css_selector(".uiMediaThumb")
+driver.execute_script(f"window.scrollTo(0, 1000)") 
+
+scroll_down(0,0)
+
+html=driver.page_source
+soup=bs4.BeautifulSoup(html,'html.parser')
+pictures=soup.select(".uiMediaThumb")
+index=0
+errors=0
+for pic in pictures:
+    download_picture(pic,index,errors)
         
-
-
-def download_picture():
-
-    pass

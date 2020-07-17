@@ -65,8 +65,6 @@ def scroll_down(previous_len,scroll_y):
 
 
 def download_picture(pic,index,errors):
-    try:
-
         driver.get(pic["href"])
         time.sleep(0.5)
         check_Loaded(".spotlight",1000)
@@ -75,25 +73,32 @@ def download_picture(pic,index,errors):
         image=soup.select(".spotlight")
         url=image[0]["src"]
         urllib.request.urlretrieve(url,f"./pictures/{index}.jpg")
-        index+=1
-    except:
-        errors+=1
-        print("errors",errors)
+   
+def get_pictures_link():
+    html=driver.page_source
+    soup=bs4.BeautifulSoup(html,'html.parser')
+    pictures=soup.select(".uiMediaThumb") 
+    return pictures
+    
     
 login()
 
 get_to_photos_page()
 
-pics=driver.find_elements_by_css_selector(".uiMediaThumb")
 driver.execute_script(f"window.scrollTo(0, 1000)") 
 
 scroll_down(0,0)
+pictures=get_pictures_link()
 
-html=driver.page_source
-soup=bs4.BeautifulSoup(html,'html.parser')
-pictures=soup.select(".uiMediaThumb")
+    
 index=0
 errors=0
 for pic in pictures:
-    download_picture(pic,index,errors)
+    try:
+        download_picture(pic,index,errors)
+        index+=1
+
+    except:
+        errors+=1
+        print("errors",errors)
         
